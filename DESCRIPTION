@@ -1,0 +1,13 @@
+Package: pot-stats-shiny
+Version: 0.1
+Title: A tiny shiny app for displaying mods.de user stats
+Description: This package plots two lines for a selection of users.
+Encoding: UTF-8
+Authors@R:
+    person("Freyberg", "Jan")
+Suggests: covr
+Depends: R (>= 3.1.0)
+LazyData: true
+Imports:
+  tidyverse,
+  shiny
