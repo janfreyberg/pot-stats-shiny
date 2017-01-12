@@ -41,7 +41,8 @@ server <- shinyServer(function(input, output) {
       gather(actiontype, naction, TotalPosts, Edits) %>%
       mutate(avglength = AvgLengthPerPost,
              totallength = LengthOfAllPosts,
-             actiontype = factor(actiontype, levels=c("TotalPosts", "Edits")))
+             actiontype = factor(actiontype, levels=c("TotalPosts", "Edits")),
+             Year = factor(Year))
       
     
     output$timePlot <- renderPlot({

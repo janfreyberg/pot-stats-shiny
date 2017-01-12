@@ -1,0 +1,9 @@
+name: pot-stats-shiny
+account: janfreyberg
+server: shinyapps.io
+appId: 150642
+bundleId: 677129
+url: https://janfreyberg.shinyapps.io/pot-stats-shiny/
+when: 1484228580.3318
+asMultiple: FALSE
+asStatic: FALSE
