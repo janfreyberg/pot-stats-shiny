@@ -22,6 +22,8 @@ ui <- shinyUI(fluidPage(
       sidebarPanel(
          textInput("usernames", "User Namen", value="Sharku, [Amateur]Cain",
                    placeholder="Mit kommas getrennt"),
+         textInput("userids", "User IDs", value="7436",
+                   placeholder="Mit kommas getrennt"),
          checkboxInput("toggleEdits", "Edits auch anzeigen?"),
          checkboxInput("toggleSize", "Punkte nach Postlaenge skalieren?",
                        value=TRUE)
@@ -29,7 +31,8 @@ ui <- shinyUI(fluidPage(
       
       # Show a plot of the generated distribution
       mainPanel(
-         plotOutput("timePlot")
+         plotOutput("actionPlot"),
+         plotOutput("lengthPlot")
       )
    )
 ))
@@ -39,28 +42,34 @@ server <- shinyServer(function(input, output) {
    
     data <- read_csv("allUserStatistics.csv") %>%
       gather(actiontype, naction, TotalPosts, Edits) %>%
-      mutate(avglength = AvgLengthPerPost,
+      rename(avglength = AvgLengthPerPost,
              totallength = LengthOfAllPosts,
-             actiontype = factor(actiontype, levels=c("TotalPosts", "Edits")),
-             Year = factor(Year))
-      
+             Jahr = Year,
+             Username = UserName) %>%
+      mutate(actiontype = factor(actiontype, levels=c("TotalPosts", "Edits")),
+             Jahr = factor(Jahr))
+
     
-    output$timePlot <- renderPlot({
+    output$actionPlot <- renderPlot({
       # separate input string
       filternames <- input$usernames %>%
+        str_split(",") %>%
+        unlist() %>%
+        str_trim()
+      filterids <- input$userids %>%
         str_split(",") %>%
         unlist() %>%
         str_trim()
       
       p <- data %>%
         # filter by username
-        filter(UserName %in% filternames) %>%
+        filter(Username %in% filternames | UserId %in% filterids) %>%
         # filter out edits if not requested
         {if(input$toggleEdits) . else filter(., actiontype=="TotalPosts")} %>%
-        ggplot(aes(x = Year,
+        ggplot(aes(x = Jahr,
                    y = naction,
-                   color = UserName,
-                   group = interaction(UserName, actiontype))) +
+                   color = Username,
+                   group = interaction(Username, actiontype))) +
         geom_line(aes(linetype = actiontype)) +
         guides(linetype=FALSE) +
         ylab("Anzahl an Aktionen")
@@ -72,6 +81,34 @@ server <- shinyServer(function(input, output) {
       }
       
       p
+    })
+    
+    output$lengthPlot <- renderPlot({
+      # separate input string
+      filternames <- input$usernames %>%
+        str_split(",") %>%
+        unlist() %>%
+        str_trim()
+      filterids <- input$userids %>%
+        str_split(",") %>%
+        unlist() %>%
+        str_trim() %>%
+        as.numeric()
+      
+      data %>%
+        # filter by username
+        filter(Username %in% filternames | UserId %in% filterids) %>%
+        # filter out edits if not requested
+        {if(input$toggleEdits) . else filter(., actiontype=="TotalPosts")} %>%
+        ggplot(aes(x = Jahr,
+                   y = totallength,
+                   color = Username,
+                   group = interaction(Username, actiontype))) +
+        geom_line(aes(linetype = actiontype)) +
+        geom_point() +
+        guides(linetype=FALSE) +
+        ylab("Zeichen in allen posts")
+      
     })
 })
 
