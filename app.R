@@ -8,16 +8,20 @@
 #
 
 library(shiny)
-library(tidyverse)
+# library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
 library(stringr)
 
-# Define UI for application that draws a histogram
+# Define UI for the timecourse app
 ui <- shinyUI(fluidPage(
    
    # Application title
    titlePanel("pOt User über die Jahre"),
    
-   # Sidebar with a slider input for number of bins 
+   # Sidebar with input for which users to display
    sidebarLayout(
       sidebarPanel(
          textInput("usernames", "User Namen", value="Sharku, [Amateur]Cain",
@@ -29,15 +33,16 @@ ui <- shinyUI(fluidPage(
                        value=TRUE)
       ),
       
-      # Show a plot of the generated distribution
+      # The two plots so far, in separate tabs
       mainPanel(
-         plotOutput("actionPlot"),
-         plotOutput("lengthPlot")
+        tabsetPanel(type = "tabs", 
+                    tabPanel("Anzahl an Posts & Edits", plotOutput("actionPlot")), 
+                    tabPanel("Anzahl an gespamten Zeichen (insgesamt)", plotOutput("lengthPlot")))
       )
    )
 ))
 
-# Define server logic required to draw a histogram
+# Define server logic required to: read data, filter data, plot graphs
 server <- shinyServer(function(input, output) {
    
     data <- read_csv("allUserStatistics.csv") %>%
