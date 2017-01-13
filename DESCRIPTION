@@ -1,10 +1,10 @@
-Package: pot-stats-shiny
+Package: potstats
 Version: 0.1
 Title: A tiny shiny app for displaying mods.de user stats
 Description: This package plots two lines for a selection of users.
 Encoding: UTF-8
 Authors@R:
-    person("Freyberg", "Jan")
+    person("Freyberg", "Jan", role=c("aut", "cre"), email="jan.freyberg@gmail.com")
 Suggests: covr
 Depends: R (>= 3.1.0)
 LazyData: true
